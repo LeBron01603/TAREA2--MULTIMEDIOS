@@ -1,22 +1,34 @@
 # Copa Mundial FIFA — API REST
 
-API REST construida con **Node.js**, **Express**, **SQLite** y **Zod** que expone información sobre 11 ediciones de la Copa Mundial FIFA (1986–2026).
+API REST desarrollada con **Node.js**, **Express**, **SQLite** y **Zod** que expone información sobre distintas ediciones de la Copa Mundial FIFA.
+
+El proyecto implementa persistencia en SQLite, validaciones con Zod y manejo correcto de códigos HTTP según los requerimientos del laboratorio.
 
 ---
 
-## Tecnologías
+## Tecnologías utilizadas
 
-| Tecnología | Versión | Uso |
-|---|---|---|
-| Node.js | 22.x | Runtime |
-| Express | 4.x | Servidor HTTP |
-| sqlite3 | 5.x | Base de datos SQLite |
-| Zod | 3.x | Validaciones de entrada |
-| ES Modules | — | `"type": "module"` |
+| Tecnología | Uso                           |
+| ---------- | ----------------------------- |
+| Node.js    | Entorno de ejecución          |
+| Express    | Servidor HTTP                 |
+| SQLite     | Persistencia de datos         |
+| sqlite3    | Driver SQLite                 |
+| Zod        | Validación de datos           |
+| ES Modules | Sistema de módulos JavaScript |
 
 ---
 
 ## Instalación
+
+Clonar el repositorio:
+
+```bash
+git clone https://github.com/LeBron01603/Tarea2-Multimedios.git
+cd Tarea2-Multimedios
+```
+
+Instalar dependencias:
 
 ```bash
 npm install
@@ -24,9 +36,9 @@ npm install
 
 ---
 
-## Base de datos (seed)
+## Inicializar la base de datos
 
-Ejecutar **antes** de iniciar el servidor para crear la tabla e insertar los 11 mundiales:
+Ejecutar el script seed para crear la tabla e insertar los datos:
 
 ```bash
 npm run seed
@@ -34,45 +46,45 @@ npm run seed
 
 ---
 
-## Ejecución
+## Ejecutar el servidor
 
 ```bash
 npm start
 ```
 
-El servidor queda disponible en: `http://localhost:4321`
+Servidor disponible en:
+
+```txt
+http://localhost:4321
+```
 
 ---
 
 ## Estructura del proyecto
 
-```
+```txt
 TAREA2--MULTIMEDIOS/
 │
 ├── database/
-│   ├── connection.js        ← Conexión SQLite + helpers async (run/get/all/exec)
-│   ├── init.js              ← Script seed: crea tabla e inserta datos
-│   └── CREATE.SQL           ← DDL de la tabla mundiales
+│   ├── connection.js
+│   ├── init.js
+│   └── CREATE.SQL
 │
 ├── data/
-│   └── mundiales.json       ← 11 ediciones de la Copa Mundial FIFA
+│   └── mundiales.json
 │
 ├── public/
-│   ├── imagenes/            ← Imágenes .jpg accesibles por URL
-│   └── capturas/            ← Evidencias de pruebas (se agregan después)
+│   ├── imagenes/
+│   └── capturas/
 │
 ├── src/
-│   ├── app.js               ← Configura Express, middlewares y rutas
+│   ├── app.js
 │   ├── controllers/
-│   │   └── mundial.controller.js   ← Lógica de cada endpoint
 │   ├── routes/
-│   │   └── mundial.routes.js       ← Definición de rutas GET
 │   ├── schemas/
-│   │   └── mundial.schema.js       ← Esquema Zod para /search/:text
 │   └── middleware/
-│       └── notFound.middleware.js  ← Respuesta 404 catch-all
 │
-├── index.js                 ← Punto de entrada (puerto 4321)
+├── index.js
 ├── package.json
 ├── README.md
 ├── REFERENCIAS.md
@@ -81,117 +93,167 @@ TAREA2--MULTIMEDIOS/
 
 ---
 
-## Tabla de rutas
+## Rutas disponibles
 
-| Método | Ruta | Descripción | Código HTTP |
-|---|---|---|---|
-| GET | `/` | Información de la API | 200 |
-| GET | `/mundiales` | Lista resumida (nombre, anio, sede, campeon, slug) | 200 |
-| GET | `/mundiales?include=full` | Lista completa con todos los campos | 200 |
-| GET | `/mundial/:slug` | Mundial por slug | 200 / 404 |
-| GET | `/campeon/:pais` | Slugs de mundiales ganados por un país | 200 |
-| GET | `/random` | Mundial aleatorio | 200 |
-| GET | `/search/:text` | Búsqueda en múltiples campos | 200 / 400 |
-| GET | `/imagenes/*` | Imágenes servidas como archivos estáticos | 200 / 404 |
-
----
-
-## Códigos HTTP
-
-| Código | Significado | Cuándo ocurre |
-|---|---|---|
-| **200 OK** | Petición exitosa | Recurso encontrado correctamente |
-| **400 Bad Request** | Validación fallida | `/search/ab` — texto menor a 3 caracteres |
-| **404 Not Found** | Recurso o ruta no existe | Slug inexistente, ruta no definida |
+| Método | Ruta                      | Descripción                 |
+| ------ | ------------------------- | --------------------------- |
+| GET    | `/`                       | Información de la API       |
+| GET    | `/mundiales`              | Lista resumida de mundiales |
+| GET    | `/mundiales?include=full` | Lista completa              |
+| GET    | `/mundial/:slug`          | Mundial por slug            |
+| GET    | `/campeon/:pais`          | Mundiales ganados por país  |
+| GET    | `/random`                 | Mundial aleatorio           |
+| GET    | `/search/:text`           | Búsqueda por texto          |
+| GET    | `/imagenes/*`             | Imágenes estáticas          |
 
 ---
 
-## Pruebas con xh
+## Códigos HTTP implementados
 
-Asegúrate de que el servidor esté corriendo (`npm start`) y el seed ejecutado (`npm run seed`).
-
-### Lista de mundiales (resumida)
-```bash
-xh GET :4321/mundiales
-```
-
-### Lista completa
-```bash
-xh GET :4321/mundiales include==full
-```
-
-### Mundial por slug (200)
-```bash
-xh GET :4321/mundial/qatar-2022
-```
-
-### Slug inexistente (404)
-```bash
-xh GET :4321/mundial/inexistente
-```
-
-### Campeón por país (case-insensitive)
-```bash
-xh GET :4321/campeon/Argentina
-```
-
-### Mundial aleatorio
-```bash
-xh GET :4321/random
-```
-
-### Búsqueda válida (200)
-```bash
-xh GET :4321/search/final
-```
-
-### Búsqueda inválida — menos de 3 caracteres (400)
-```bash
-xh GET :4321/search/ab
-```
-
----
-
-## Cómo probar imágenes
-
-Abre cualquiera de estas URLs directamente en el navegador:
-
-```
-http://localhost:4321/imagenes/mexico-1986.jpg
-http://localhost:4321/imagenes/italia-1990.jpg
-http://localhost:4321/imagenes/estados-unidos-1994.jpg
-http://localhost:4321/imagenes/francia-1998.jpg
-http://localhost:4321/imagenes/corea-japon-2002.jpg
-http://localhost:4321/imagenes/alemania-2006.jpg
-http://localhost:4321/imagenes/sudafrica-2010.jpg
-http://localhost:4321/imagenes/brasil-2014.jpg
-http://localhost:4321/imagenes/rusia-2018.jpg
-http://localhost:4321/imagenes/qatar-2022.jpg
-http://localhost:4321/imagenes/mundial-2026.jpg
-```
-
-Las imágenes se sirven directamente con `express.static`. No existe ninguna vista HTML.
-
----
-
-## Evidencias
-
-Las capturas de pantalla de las pruebas se guardan en `public/capturas/`.
+| Código | Significado |
+| ------ | ----------- |
+| 200    | OK          |
+| 400    | Bad Request |
+| 404    | Not Found   |
 
 ---
 
 ## Mundiales incluidos
 
-| # | Edición | Sede | Campeón |
-|---|---|---|---|
-| 1 | 1986 | México | Argentina |
-| 2 | 1990 | Italia | Alemania Occidental |
-| 3 | 1994 | Estados Unidos | Brasil |
-| 4 | 1998 | Francia | Francia |
-| 5 | 2002 | Corea del Sur y Japón | Brasil |
-| 6 | 2006 | Alemania | Italia |
-| 7 | 2010 | Sudáfrica | España |
-| 8 | 2014 | Brasil | Alemania |
-| 9 | 2018 | Rusia | Francia |
-| 10 | 2022 | Qatar | Argentina |
-| 11 | 2026 | México, EE. UU. y Canadá | Por definir |
+| Año  | Sede                            | Campeón             |
+| ---- | ------------------------------- | ------------------- |
+| 1986 | México                          | Argentina           |
+| 1990 | Italia                          | Alemania Occidental |
+| 1994 | Estados Unidos                  | Brasil              |
+| 1998 | Francia                         | Francia             |
+| 2002 | Corea del Sur y Japón           | Brasil              |
+| 2006 | Alemania                        | Italia              |
+| 2010 | Sudáfrica                       | España              |
+| 2014 | Brasil                          | Alemania            |
+| 2018 | Rusia                           | Francia             |
+| 2022 | Qatar                           | Argentina           |
+| 2026 | México, Estados Unidos y Canadá | Por definir         |
+
+---
+
+## Pruebas requeridas por el laboratorio
+
+```bash
+xh GET :4321/mundiales
+
+xh GET :4321/mundiales include==full
+
+xh GET :4321/mundial/qatar-2022
+
+xh GET :4321/mundial/inexistente
+
+xh GET :4321/campeon/Argentina
+
+xh GET :4321/random
+
+xh GET :4321/search/final
+
+xh GET :4321/search/ab
+```
+
+---
+
+# Evidencias de ejecución
+
+## GET /mundiales
+
+![GET Mundiales](public/capturas/GET-Mundiales.png)
+
+---
+
+## GET /mundiales?include=full
+
+![GET Mundiales Full](public/capturas/GET-Mundiales-Full.png)
+
+---
+
+## GET /mundial/qatar-2022
+
+![GET Qatar 2022](public/capturas/GET-Qatar-2022.png)
+
+---
+
+## GET /mundial/inexistente
+
+![GET Mundial Inexistente](public/capturas/GET-Mundial-Inexistente.png)
+
+---
+
+## GET /campeon/Argentina
+
+![GET Campeón Argentina](public/capturas/GET-Campeon-Argentina.png)
+
+---
+
+## GET /random
+
+![GET Random](public/capturas/GET-Random.png)
+
+---
+
+## GET /search/final
+
+![GET Search Final](public/capturas/GET-Search-Final.png)
+
+---
+
+## GET /search/ab
+
+![GET Search 400](public/capturas/GET-Search-400.png)
+
+---
+
+## Prueba de imágenes
+
+Accediendo directamente desde el navegador:
+
+```txt
+http://localhost:4321/imagenes/qatar-2022.jpg
+```
+
+![Imagen Qatar 2022](public/capturas/GET-Imagen-Qatar.png)
+
+---
+
+## Cómo probar las imágenes
+
+Ejemplos:
+
+```txt
+http://localhost:4321/imagenes/mexico-1986.jpg
+http://localhost:4321/imagenes/qatar-2022.jpg
+http://localhost:4321/imagenes/mundial-2026.jpg
+```
+
+Las imágenes son servidas mediante `express.static()` y no existe frontend ni vistas HTML.
+
+---
+
+## Cumplimiento del enunciado
+
+* ✅ Node.js + Express
+* ✅ SQLite
+* ✅ Zod
+* ✅ ES Modules
+* ✅ Puerto 4321
+* ✅ 11 mundiales registrados
+* ✅ Imágenes accesibles por URL
+* ✅ Manejo de códigos 200, 400 y 404
+* ✅ README.md
+* ✅ REFERENCIAS.md
+* ✅ Persistencia SQLite
+* ✅ Documentación de pruebas
+* ✅ Estructura modular basada en lo visto en clase
+
+---
+
+## Autor
+
+**Emiliano Martínez**
+Curso: Multimedios
+Universidad de Costa Rica
