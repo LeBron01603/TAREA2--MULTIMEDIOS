@@ -1,0 +1,16 @@
+{
+  "name": "tarea2-multimedios",
+  "version": "1.0.0",
+  "description": "API REST sobre la Copa Mundial FIFA - Laboratorio 2 Multimedios",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "seed": "node database/init.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "sqlite3": "^5.1.6",
+    "zod": "^3.22.4"
+  }
+}
