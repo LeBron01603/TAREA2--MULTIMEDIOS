@@ -192,7 +192,7 @@ xh GET :4321/search/ab
 
 ## GET /random
 
-![GET Random](public/capturas/GET-Random.png)
+![GET Random](public/capturas/Get-Random.png)
 
 ---
 
